@@ -1,31 +1,68 @@
 package com.movielibrary.springcrud;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/movies")
 public class MovieController {
 
     @Autowired
     MovieRepository movieRepository;
 
-    @GetMapping("/test")
-    public int test(){
-        return  1;
-    }
-
-    @GetMapping("/movies")
+    @GetMapping("")
     public List<Movie> getAll(){
-        System.out.println(movieRepository.getAll());
         return movieRepository.getAll();
     }
 
-    @GetMapping("/movies/{id}")
+    @GetMapping("/{id}")
     public Movie getById(@PathVariable("id") int id){
         return movieRepository.getById(id);
     }
+
+    @PostMapping("")
+    public int add(@RequestBody List<Movie> movies){
+        return movieRepository.save(movies);
+
+    }
+
+    @PutMapping("/{id}")
+    public int update(@PathVariable("id") int id, @RequestBody Movie updatedMovie){
+        Movie movie = movieRepository.getById(id);
+
+        if (movie != null){
+            movie.setName(updatedMovie.getName());
+            movie.setRating(updatedMovie.getRating());
+
+            movieRepository.update(movie);
+
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public int partiallyUpdate(@PathVariable int id, @RequestBody Movie updatedMovie) {
+        Movie movie = movieRepository.getById(id);
+        if(movie != null){
+            if(updatedMovie.getName() != null) movie.setName(updatedMovie.getName());
+            if(updatedMovie.getRating() > 0) movie.setRating(updatedMovie.getRating());
+
+            movieRepository.update(movie);
+
+            return 1;
+        } else {
+            return -1;
+        }
+
+    }
+
+    @DeleteMapping("/{id}")
+    public int delete(@PathVariable("id") int id){
+        return movieRepository.delete(id);
+    }
+
 }
