@@ -16,4 +16,8 @@ public class MovieRepository {
     public List<Movie> getAll() {
         return jdbcTemplatel.query("SELECT id, name, rating FROM movie", BeanPropertyRowMapper.newInstance(Movie.class));
     }
+
+    public Movie getById(int id) {
+        return jdbcTemplatel.queryForObject("SELECT id, name, rating FROM movie where id=?", BeanPropertyRowMapper.newInstance(Movie.class), id);
+    }
 }
